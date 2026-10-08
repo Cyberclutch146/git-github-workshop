@@ -75,14 +75,12 @@ Once merged your card will appear on the **Class Wall**! 🧱
 
 ## 🧱 Class Wall
 
-After your PR is merged, a GitHub Action rebuilds the
-[**Class Wall**](https://Cyberclutch146.github.io/git-github-workshop/) —
+After your PR is merged, Vercel automatically rebuilds the
+[**Class Wall**](https://git-github-workshop.vercel.app/) —
 a web page that shows every student's card.
 
-> **Enabling Pages:** The repo owner needs to go to
-> **Settings → Pages → Build and deployment** and select **GitHub Actions**
-> as the source. The wall will be live at
-> `https://Cyberclutch146.github.io/git-github-workshop/`.
+> **Live at:** [git-github-workshop.vercel.app](https://git-github-workshop.vercel.app/)
+> *(The URL may differ — check with your instructor.)*
 
 ---
 

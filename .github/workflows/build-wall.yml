@@ -1,16 +1,15 @@
 # ============================================================
-# build-wall.yml — Build & Deploy the Class Wall
+# build-wall.yml — Build Class Wall Data
 # ============================================================
 #
 # This workflow runs whenever code is pushed to main.
-# It does two things:
 #
-#   1. Runs `node wall/build.js` to regenerate wall/data.json
-#      from the student files, and commits the update if the
-#      file changed.
+# It runs `node wall/build.js` to regenerate wall/data.json
+# from the student files, and commits the update if the
+# file changed.
 #
-#   2. Deploys the wall/ folder to GitHub Pages so the Class
-#      Wall is always up to date.
+# Vercel automatically picks up the push and deploys the
+# updated wall/ folder — no extra deploy step needed here.
 #
 # To avoid infinite loops, the commit step uses [skip ci] in
 # the commit message and checks whether data.json actually
@@ -18,21 +17,19 @@
 #
 # ============================================================
 
-name: 🧱 Build & Deploy Class Wall
+name: 🧱 Build Class Wall Data
 
 on:
   push:
     branches: [main]
 
-# Sets permissions for GITHUB_TOKEN so we can commit and deploy
+# Allow the workflow to commit updated data.json
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
-# Only allow one deployment at a time
+# Only run one build at a time
 concurrency:
-  group: "pages"
+  group: "build-wall"
   cancel-in-progress: false
 
 jobs:
@@ -72,33 +69,5 @@ jobs:
           git add wall/data.json
           git commit -m "🤖 Update wall/data.json [skip ci]"
           git push
+          # Vercel will auto-deploy from this push
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: main  # Get the latest (possibly updated) main
-
-      - name: Pull latest changes
-        run: git pull origin main
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload wall/ as artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'wall/'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
