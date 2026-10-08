@@ -1,0 +1,104 @@
+# ============================================================
+# build-wall.yml — Build & Deploy the Class Wall
+# ============================================================
+#
+# This workflow runs whenever code is pushed to main.
+# It does two things:
+#
+#   1. Runs `node wall/build.js` to regenerate wall/data.json
+#      from the student files, and commits the update if the
+#      file changed.
+#
+#   2. Deploys the wall/ folder to GitHub Pages so the Class
+#      Wall is always up to date.
+#
+# To avoid infinite loops, the commit step uses [skip ci] in
+# the commit message and checks whether data.json actually
+# changed before committing.
+#
+# ============================================================
+
+name: 🧱 Build & Deploy Class Wall
+
+on:
+  push:
+    branches: [main]
+
+# Sets permissions for GITHUB_TOKEN so we can commit and deploy
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Only allow one deployment at a time
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build wall data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build data.json
+        run: node wall/build.js
+
+      - name: Check for changes
+        id: check
+        run: |
+          # Check if data.json was modified
+          if git diff --quiet wall/data.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "📋 No changes to data.json — skipping commit."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "📝 data.json has changed — will commit."
+          fi
+
+      - name: Commit updated data.json
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wall/data.json
+          git commit -m "🤖 Update wall/data.json [skip ci]"
+          git push
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main  # Get the latest (possibly updated) main
+
+      - name: Pull latest changes
+        run: git pull origin main
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload wall/ as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'wall/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

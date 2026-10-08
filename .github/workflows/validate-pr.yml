@@ -1,0 +1,159 @@
+# ============================================================
+# validate-pr.yml — Pull Request Validator
+# ============================================================
+#
+# This workflow runs on every pull request and checks that
+# the student followed the rules:
+#
+#   Round 1: PR adds exactly one new .md file in students/
+#            with all required front-matter fields.
+#
+#   OR: PR only edits CONTRIBUTORS.md or conflict-demo/motto.txt
+#       (for Round 2 and bonus tasks).
+#
+# If something is wrong, the workflow fails with a clear,
+# friendly error message telling the student what to fix.
+#
+# ============================================================
+
+name: ✅ Validate PR
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Check student PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history to diff against main
+
+      - name: Validate PR changes
+        run: |
+          echo "🔍 Checking your pull request..."
+          echo ""
+
+          # Get the list of changed files compared to main
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMR origin/main...HEAD)
+          echo "📂 Changed files:"
+          echo "$CHANGED_FILES"
+          echo ""
+
+          # Count changed files
+          NUM_CHANGED=$(echo "$CHANGED_FILES" | grep -c '.' || true)
+
+          # ---- Check: Is this a Round 2 / bonus PR? ----
+          # These PRs only touch CONTRIBUTORS.md or conflict-demo/motto.txt
+          ROUND2_ONLY=true
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then
+              continue
+            fi
+            if [ "$file" != "CONTRIBUTORS.md" ] && [ "$file" != "conflict-demo/motto.txt" ]; then
+              ROUND2_ONLY=false
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [ "$ROUND2_ONLY" = true ] && [ "$NUM_CHANGED" -gt 0 ]; then
+            echo "✅ This looks like a Round 2 or bonus PR. All good!"
+            exit 0
+          fi
+
+          # ---- Check: Round 1 — exactly one new student file ----
+
+          # Find new files in students/ (excluding README.md and example-student.md)
+          STUDENT_FILES=$(echo "$CHANGED_FILES" | grep '^students/' | grep '\.md$' | grep -v 'README.md' | grep -v 'example-student.md' || true)
+          NUM_STUDENT_FILES=$(echo "$STUDENT_FILES" | grep -c '.' || true)
+
+          # Find any changed files outside students/
+          OTHER_FILES=$(echo "$CHANGED_FILES" | grep -v '^students/' || true)
+          NUM_OTHER_FILES=$(echo "$OTHER_FILES" | grep -c '.' || true)
+
+          # Check: must have exactly one student file
+          if [ "$NUM_STUDENT_FILES" -eq 0 ]; then
+            echo ""
+            echo "❌ ERROR: No student file found!"
+            echo ""
+            echo "👉 Your PR should add a new file in the students/ folder."
+            echo "   The file should be named <your-github-username>.md"
+            echo "   Example: students/octocat.md"
+            echo ""
+            echo "📖 See students/README.md for the template."
+            exit 1
+          fi
+
+          if [ "$NUM_STUDENT_FILES" -gt 1 ]; then
+            echo ""
+            echo "❌ ERROR: Too many student files!"
+            echo ""
+            echo "👉 Your PR should add exactly ONE file in students/."
+            echo "   You added $NUM_STUDENT_FILES files:"
+            echo "$STUDENT_FILES"
+            echo ""
+            echo "Please remove the extra files and keep only yours."
+            exit 1
+          fi
+
+          # Check: no other files should be changed (in Round 1)
+          if [ "$NUM_OTHER_FILES" -gt 0 ]; then
+            echo ""
+            echo "⚠️  WARNING: You changed files outside students/:"
+            echo "$OTHER_FILES"
+            echo ""
+            echo "👉 In Round 1, only add your own file in students/."
+            echo "   Please revert changes to other files."
+            exit 1
+          fi
+
+          # ---- Check: front matter has all required fields ----
+
+          STUDENT_FILE="$STUDENT_FILES"
+          echo "📄 Checking front matter in: $STUDENT_FILE"
+
+          # Read the file content
+          FILE_CONTENT=$(cat "$STUDENT_FILE")
+
+          # Check that the file starts with ---
+          if ! echo "$FILE_CONTENT" | head -1 | grep -q '^---'; then
+            echo ""
+            echo "❌ ERROR: Missing front matter!"
+            echo ""
+            echo "👉 Your file must start with --- and have a front matter block."
+            echo "   Example:"
+            echo "   ---"
+            echo "   name: Your Name"
+            echo "   github: your-username"
+            echo "   bio: A short bio"
+            echo "   favourite: Python"
+            echo "   ---"
+            exit 1
+          fi
+
+          # Check each required field
+          MISSING=""
+          for field in name github bio favourite; do
+            if ! echo "$FILE_CONTENT" | grep -qi "^${field}:.\+"; then
+              MISSING="$MISSING $field"
+            fi
+          done
+
+          if [ -n "$MISSING" ]; then
+            echo ""
+            echo "❌ ERROR: Missing front-matter fields:$MISSING"
+            echo ""
+            echo "👉 Make sure your file has ALL of these fields filled in:"
+            echo "   name, github, bio, favourite"
+            echo ""
+            echo "   Each field must have a value after the colon."
+            echo "   Example:  name: Ada Lovelace"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All checks passed! Your PR looks great! 🎉"
