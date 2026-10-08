@@ -1,175 +1,451 @@
 /*
  * ============================================================
- * style.css — Class Wall Styles
+ * style.css — School Notebook Theme 📓
  * ============================================================
  *
- * A clean, modern, responsive stylesheet for the Class Wall.
- * Supports dark mode automatically via prefers-color-scheme.
+ * Makes the Class Wall look like a ruled notebook page with
+ * sticky notes taped on. Features:
  *
- * The design uses CSS custom properties (variables) so it's
- * easy to tweak colours in one place.
- *
- * Improvement ideas (NOT implemented — good-first-issues!):
- *   - TODO: Add a dark/light theme toggle button
- *   - TODO: Add unique border colours per favourite language
- *   - TODO: Add a styled footer
+ *   - Lined paper background with blue rules
+ *   - Red margin line on the left
+ *   - Spiral binding holes along the top
+ *   - Handwritten Google Fonts
+ *   - Pastel sticky-note cards with tape
+ *   - Random tilts and doodles
+ *   - Paper texture and shadows
+ *   - Fully responsive
  *
  * ============================================================
  */
 
-/* ---------- CSS Variables (Design Tokens) ---------- */
+/* ---------- Design Tokens ---------- */
 
 :root {
-  /* Light mode colours */
-  --bg-primary: #f0f2f5;
-  --bg-card: #ffffff;
-  --text-primary: #1a1a2e;
-  --text-secondary: #555770;
-  --text-link: #4361ee;
-  --accent: #4361ee;
-  --accent-glow: rgba(67, 97, 238, 0.15);
-  --badge-bg: #e8eaf6;
-  --badge-text: #3949ab;
-  --border-card: rgba(0, 0, 0, 0.08);
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 8px 30px rgba(67, 97, 238, 0.15);
-  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --radius: 16px;
-  --transition: 0.25s ease;
+  --paper-bg: #fdf6e3;
+  --paper-lines: #a8d4f0;
+  --paper-margin: #e74c4c;
+  --paper-margin-width: 70px;
+  --line-height: 32px;
+  --ink-color: #2c3e50;
+  --ink-light: #5a6c7d;
+  --pencil-color: #4a4a4a;
+  --spiral-color: #888;
+  --spiral-ring: #c0c0c0;
+
+  --font-handwriting: 'Caveat', cursive;
+  --font-neat: 'Patrick Hand', cursive;
+  --font-scribble: 'Gloria Hallelujah', cursive;
+  --font-flower: 'Indie Flower', cursive;
 }
 
-/* ---------- Dark Mode ---------- */
+/* ---------- Reset ---------- */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #0f0f1a;
-    --bg-card: #1a1a2e;
-    --text-primary: #e0e0ec;
-    --text-secondary: #9999b3;
-    --text-link: #7b8cff;
-    --accent: #7b8cff;
-    --accent-glow: rgba(123, 140, 255, 0.2);
-    --badge-bg: #2a2a4a;
-    --badge-text: #a5b4fc;
-    --border-card: rgba(255, 255, 255, 0.06);
-    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.3);
-    --shadow-card-hover: 0 8px 30px rgba(123, 140, 255, 0.2);
-  }
-}
-
-/* ---------- Reset & Base ---------- */
-
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ---------- The Notebook Page ---------- */
+
 body {
-  font-family: var(--font-main);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  font-family: var(--font-neat);
+  color: var(--ink-color);
   min-height: 100vh;
-  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+
+  /* Lined paper background */
+  background-color: var(--paper-bg);
+  background-image:
+    /* Horizontal ruled lines */
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(var(--line-height) - 1px),
+      var(--paper-lines) calc(var(--line-height) - 1px),
+      var(--paper-lines) var(--line-height)
+    );
+  background-size: 100% var(--line-height);
+  background-position: 0 80px;
+
+  /* Subtle paper texture */
+  background-blend-mode: normal;
 }
 
-a {
-  color: var(--text-link);
-  text-decoration: none;
-  transition: color var(--transition);
+/* Paper grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
-a:hover {
-  text-decoration: underline;
+/* ---------- Red Margin Line ---------- */
+
+#margin-line {
+  position: fixed;
+  top: 0;
+  left: var(--paper-margin-width);
+  width: 2px;
+  height: 100%;
+  background: var(--paper-margin);
+  opacity: 0.6;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Second faint margin line */
+#margin-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 4px;
+  width: 1px;
+  height: 100%;
+  background: var(--paper-margin);
+  opacity: 0.3;
+}
+
+/* ---------- Spiral Binding ---------- */
+
+#spiral-binding {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  z-index: 100;
+  padding: 0 40px;
+  background: linear-gradient(
+    to bottom,
+    var(--paper-bg) 0%,
+    var(--paper-bg) 70%,
+    transparent 100%
+  );
+}
+
+.spiral-hole {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e8e0d0;
+  border: 3px solid var(--spiral-ring);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.2),
+    0 1px 2px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+/* Spiral ring wire effect */
+.spiral-hole::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 36px;
+  border: 2.5px solid var(--spiral-ring);
+  border-radius: 50%;
+  border-bottom: none;
+  z-index: -1;
 }
 
 /* ---------- Header ---------- */
 
 #wall-header {
-  text-align: center;
-  padding: 3rem 1.5rem 2rem;
+  padding: 70px 2rem 1.5rem;
+  padding-left: calc(var(--paper-margin-width) + 30px);
+  position: relative;
+}
+
+.header-date {
+  font-family: var(--font-flower);
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  margin-bottom: 0.25rem;
+  opacity: 0.7;
 }
 
 #wall-header h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--accent), #a855f7);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: var(--font-handwriting);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--ink-color);
+  line-height: 1.1;
+  position: relative;
+  display: inline-block;
+}
+
+.title-doodle {
+  font-size: 2rem;
+  vertical-align: middle;
 }
 
 .subtitle {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  max-width: 500px;
-  margin: 0 auto;
+  font-family: var(--font-neat);
+  font-size: 1.2rem;
+  color: var(--ink-light);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Hand-drawn underline */
+.doodle-underline {
+  width: 280px;
+  height: 8px;
+  margin-top: 8px;
+  background: transparent;
+  border-bottom: 3px solid var(--ink-color);
+  border-radius: 0 0 60% 40%;
+  opacity: 0.3;
+  transform: rotate(-0.5deg);
+}
+
+/* ---------- Doodle Decorations ---------- */
+
+.doodle {
+  position: fixed;
+  font-family: var(--font-handwriting);
+  color: var(--ink-light);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 5;
+  user-select: none;
+}
+
+.doodle-star {
+  font-size: 3rem;
+  top: 120px;
+  right: 40px;
+  transform: rotate(15deg);
+  animation: doodle-bob 4s ease-in-out infinite;
+}
+
+.doodle-arrow {
+  font-size: 4rem;
+  top: 50%;
+  right: 25px;
+  transform: rotate(-10deg);
+}
+
+.doodle-heart {
+  font-size: 2.5rem;
+  bottom: 200px;
+  left: 20px;
+  transform: rotate(8deg);
+}
+
+.doodle-smiley {
+  font-size: 2rem;
+  top: 300px;
+  right: 60px;
+  transform: rotate(-5deg);
+  font-family: var(--font-scribble);
+}
+
+.doodle-check {
+  font-size: 2.5rem;
+  bottom: 100px;
+  right: 50px;
+  transform: rotate(12deg);
+  color: #27ae60;
+  opacity: 0.12;
+}
+
+@keyframes doodle-bob {
+  0%, 100% { transform: rotate(15deg) translateY(0); }
+  50% { transform: rotate(18deg) translateY(-5px); }
 }
 
 /* ---------- Card Grid ---------- */
 
 #wall-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem 3rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2.5rem;
+  max-width: 1100px;
+  margin: 1rem auto;
+  padding: 1rem 2rem 3rem;
+  padding-left: calc(var(--paper-margin-width) + 30px);
 }
 
-/* ---------- Student Card ---------- */
+/* ---------- Sticky Note Card ---------- */
 
-.student-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius);
-  padding: 1.75rem;
-  box-shadow: var(--shadow-card);
-  transition: transform var(--transition), box-shadow var(--transition);
+.sticky-note {
+  --rotate: 0deg;
+  --bg: #fff9a6;
+  --shadow-color: #e6df82;
+  --tape-color: #c4e67e;
+
+  background: var(--bg);
+  padding: 1.5rem 1.25rem 1.25rem;
+  position: relative;
+  transform: rotate(var(--rotate));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+
+  /* Curled corner shadow effect */
+  box-shadow:
+    2px 3px 8px rgba(0, 0, 0, 0.12),
+    inset 0 0 40px rgba(0, 0, 0, 0.02);
+
+  /* Slightly rough edges */
+  border-radius: 1px 1px 1px 25px / 1px 1px 1px 15px;
+
+  min-height: 180px;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.4rem;
+  cursor: default;
 }
 
-.student-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card-hover);
+/* Paper fold in bottom-left corner */
+.sticky-note::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 25px;
+  height: 25px;
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    var(--shadow-color) 50%
+  );
+  border-radius: 0 0 0 2px;
 }
 
-.card-name {
-  font-size: 1.25rem;
+/* Subtle lined pattern on the sticky note */
+.sticky-note::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    rgba(0, 0, 0, 0.04) 27px,
+    rgba(0, 0, 0, 0.04) 28px
+  );
+  border-radius: inherit;
+}
+
+.sticky-note:hover {
+  transform: rotate(0deg) scale(1.05) translateY(-5px);
+  box-shadow:
+    4px 8px 20px rgba(0, 0, 0, 0.18),
+    inset 0 0 40px rgba(0, 0, 0, 0.02);
+  z-index: 20;
+}
+
+/* ---------- Tape Strip ---------- */
+
+.tape-strip {
+  --tape-tilt: 0deg;
+
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(var(--tape-tilt));
+  width: 70px;
+  height: 24px;
+  background: var(--tape-color);
+  opacity: 0.55;
+  border-radius: 1px;
+  z-index: 10;
+
+  /* Tape texture */
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.15) 2px,
+    rgba(255, 255, 255, 0.15) 4px
+  );
+
+  /* Rough tape edges */
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 30' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='2' width='100' height='26' fill='black' rx='1'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 30' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='2' width='100' height='26' fill='black' rx='1'/%3E%3C/svg%3E");
+}
+
+/* ---------- Sticky Note Content ---------- */
+
+.sticky-name {
+  font-family: var(--font-handwriting);
+  font-size: 1.6rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #2c3e50;
+  line-height: 1.2;
+  margin-top: 0.5rem;
+  position: relative;
+  z-index: 2;
 }
 
-.card-github {
-  font-size: 0.9rem;
-  color: var(--accent);
-  font-weight: 500;
+.sticky-github {
+  font-family: var(--font-flower);
+  font-size: 0.85rem;
+  color: #3498db;
+  text-decoration: none;
+  position: relative;
+  z-index: 2;
 }
 
-.card-bio {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
+.sticky-github:hover {
+  color: #2980b9;
+  text-decoration: underline wavy;
+}
+
+.sticky-bio {
+  font-family: var(--font-neat);
+  font-size: 0.92rem;
+  color: #555;
   line-height: 1.5;
   flex-grow: 1;
+  position: relative;
+  z-index: 2;
+  font-style: italic;
 }
 
-.card-favourite {
+.sticky-fav {
+  font-family: var(--font-handwriting);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e74c3c;
+  position: relative;
+  z-index: 2;
   display: inline-block;
   align-self: flex-start;
-  background: var(--badge-bg);
-  color: var(--badge-text);
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  letter-spacing: 0.02em;
-  margin-top: 0.25rem;
+
+  /* Circled effect */
+  border: 2px solid rgba(231, 76, 60, 0.3);
+  border-radius: 50% 45% 55% 40% / 45% 50% 40% 55%;
+  padding: 2px 10px;
+  transform: rotate(-1deg);
+}
+
+.sticky-doodle {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 1.3rem;
+  opacity: 0.25;
+  z-index: 2;
+  transform: rotate(10deg);
 }
 
 /* ---------- Empty State ---------- */
@@ -179,55 +455,202 @@ a:hover {
 }
 
 #empty-state {
-  text-align: center;
-  padding: 4rem 1.5rem;
-  max-width: 500px;
-  margin: 0 auto;
+  padding: 3rem 2rem;
+  padding-left: calc(var(--paper-margin-width) + 30px);
 }
 
-.empty-icon {
-  font-size: 4rem;
+.empty-notebook {
+  background: #fff9a6;
+  max-width: 400px;
+  padding: 2.5rem 2rem;
+  position: relative;
+  transform: rotate(-1deg);
+  box-shadow: 3px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.empty-pencil {
+  font-size: 3rem;
   margin-bottom: 1rem;
 }
 
-#empty-state h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
+.empty-notebook h2 {
+  font-family: var(--font-handwriting);
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink-color);
 }
 
-#empty-state p {
-  color: var(--text-secondary);
+.empty-notebook p {
+  font-family: var(--font-neat);
+  color: var(--ink-light);
   font-size: 1rem;
   line-height: 1.6;
 }
 
-/* ---------- Error ---------- */
+.empty-arrow {
+  font-family: var(--font-scribble);
+  font-size: 1.1rem;
+  color: var(--paper-margin);
+  margin-top: 1rem;
+  transform: rotate(-3deg);
+  opacity: 0.8;
+}
 
-.error-message {
+/* ---------- Footer ---------- */
+
+#wall-footer {
   text-align: center;
-  padding: 2rem;
-  color: var(--text-secondary);
+  padding: 3rem 1rem 2rem;
+  padding-left: var(--paper-margin-width);
+}
+
+.footer-scribble {
+  font-family: var(--font-scribble);
   font-size: 1rem;
+  color: var(--ink-light);
+  opacity: 0.5;
+}
+
+.footer-link {
+  font-family: var(--font-neat);
+  font-size: 0.95rem;
+  color: #3498db;
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.footer-link:hover {
+  opacity: 1;
+  text-decoration: underline wavy;
+}
+
+/* ---------- Error State ---------- */
+
+.error-note {
+  background: #ffb3ba;
+  padding: 2rem;
+  max-width: 350px;
+  transform: rotate(1deg);
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: var(--font-handwriting);
+}
+
+.error-note p {
+  font-size: 1.2rem;
+  color: #c0392b;
+}
+
+.error-sub {
+  font-size: 0.9rem !important;
+  color: #e74c3c !important;
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+/* ---------- Coffee Stain (pure CSS) ---------- */
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 60px;
+  right: 30px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 4px solid rgba(139, 90, 43, 0.08);
+  pointer-events: none;
+  z-index: 5;
+  box-shadow:
+    inset 0 0 15px rgba(139, 90, 43, 0.04),
+    2px 2px 6px rgba(139, 90, 43, 0.03);
 }
 
 /* ---------- Responsive ---------- */
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  :root {
+    --paper-margin-width: 35px;
+    --line-height: 28px;
+  }
+
   #wall-header h1 {
-    font-size: 1.75rem;
+    font-size: 2.5rem;
   }
 
   .subtitle {
-    font-size: 0.95rem;
+    font-size: 1rem;
+  }
+
+  #wall-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    padding-left: calc(var(--paper-margin-width) + 15px);
+    padding-right: 1rem;
+  }
+
+  #wall-header {
+    padding-left: calc(var(--paper-margin-width) + 15px);
+  }
+
+  #empty-state {
+    padding-left: calc(var(--paper-margin-width) + 15px);
+  }
+
+  .doodle {
+    display: none;
+  }
+
+  .spiral-hole {
+    width: 16px;
+    height: 16px;
+  }
+
+  .spiral-hole::before {
+    width: 22px;
+    height: 28px;
+    top: -6px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --paper-margin-width: 20px;
+  }
+
+  #wall-header h1 {
+    font-size: 2rem;
   }
 
   #wall-container {
     grid-template-columns: 1fr;
-    padding: 1rem;
+    gap: 2rem;
   }
 
-  .student-card {
-    padding: 1.25rem;
+  .sticky-note {
+    padding: 1.25rem 1rem 1rem;
+  }
+
+  #spiral-binding {
+    padding: 0 10px;
+  }
+}
+
+/* ---------- Print ---------- */
+
+@media print {
+  #spiral-binding,
+  #margin-line,
+  .doodle,
+  body::before,
+  body::after {
+    display: none;
+  }
+
+  .sticky-note {
+    break-inside: avoid;
+    transform: none !important;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
   }
 }
