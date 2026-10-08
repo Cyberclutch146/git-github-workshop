@@ -1,0 +1,233 @@
+/*
+ * ============================================================
+ * style.css — Class Wall Styles
+ * ============================================================
+ *
+ * A clean, modern, responsive stylesheet for the Class Wall.
+ * Supports dark mode automatically via prefers-color-scheme.
+ *
+ * The design uses CSS custom properties (variables) so it's
+ * easy to tweak colours in one place.
+ *
+ * Improvement ideas (NOT implemented — good-first-issues!):
+ *   - TODO: Add a dark/light theme toggle button
+ *   - TODO: Add unique border colours per favourite language
+ *   - TODO: Add a styled footer
+ *
+ * ============================================================
+ */
+
+/* ---------- CSS Variables (Design Tokens) ---------- */
+
+:root {
+  /* Light mode colours */
+  --bg-primary: #f0f2f5;
+  --bg-card: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #555770;
+  --text-link: #4361ee;
+  --accent: #4361ee;
+  --accent-glow: rgba(67, 97, 238, 0.15);
+  --badge-bg: #e8eaf6;
+  --badge-text: #3949ab;
+  --border-card: rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 8px 30px rgba(67, 97, 238, 0.15);
+  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --radius: 16px;
+  --transition: 0.25s ease;
+}
+
+/* ---------- Dark Mode ---------- */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #0f0f1a;
+    --bg-card: #1a1a2e;
+    --text-primary: #e0e0ec;
+    --text-secondary: #9999b3;
+    --text-link: #7b8cff;
+    --accent: #7b8cff;
+    --accent-glow: rgba(123, 140, 255, 0.2);
+    --badge-bg: #2a2a4a;
+    --badge-text: #a5b4fc;
+    --border-card: rgba(255, 255, 255, 0.06);
+    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 8px 30px rgba(123, 140, 255, 0.2);
+  }
+}
+
+/* ---------- Reset & Base ---------- */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Header ---------- */
+
+#wall-header {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+}
+
+#wall-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ---------- Card Grid ---------- */
+
+#wall-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 3rem;
+}
+
+/* ---------- Student Card ---------- */
+
+.student-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.student-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.card-github {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.card-bio {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.card-favourite {
+  display: inline-block;
+  align-self: flex-start;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  margin-top: 0.25rem;
+}
+
+/* ---------- Empty State ---------- */
+
+.hidden {
+  display: none !important;
+}
+
+#empty-state {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+#empty-state h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+#empty-state p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* ---------- Error ---------- */
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 600px) {
+  #wall-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  #wall-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .student-card {
+    padding: 1.25rem;
+  }
+}
