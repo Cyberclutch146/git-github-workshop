@@ -1,118 +1,82 @@
 # 🎓 Git & GitHub Workshop
 
-Welcome! This is a **hands-on practice repository** for learning Git and GitHub.
-By the end of this workshop you will have forked a repo, created a branch,
-made commits, pushed code, and opened a pull request — the core skills every
-developer uses daily.
-
-> **No experience required.** Follow the steps below and ask in the chat if
-> you get stuck!
+A hands-on repo where you learn Git by doing. Fork it, add your name, open a
+PR — and watch your card appear on the
+[**Class Wall**](https://git-github-workshop.vercel.app/)!
 
 ---
 
-## 🚀 Student Workflow (Round 1 — Your first PR)
+## 🚀 How to Contribute
 
-### Step 1 — Fork this repo
+### 1. Fork this repo
 
-Click the **Fork** button at the top-right of this page. This creates your
-own copy of the repo under your GitHub account.
+Click the **Fork** button (top-right of this page).
 
-### Step 2 — Clone YOUR fork
+### 2. Clone your fork
 
 ```bash
 git clone https://github.com/<your-username>/git-github-workshop.git
+cd git-github-workshop
 ```
 
-Replace `<your-username>` with your actual GitHub username.
-
-### Step 3 — Enter the folder & create a branch
+### 3. Create a branch
 
 ```bash
-cd git-github-workshop
 git switch -c add-<your-username>
 ```
 
-For example: `git switch -c add-octocat`
+### 4. Add your file
 
-### Step 4 — Add your student file
+Create `students/<your-github-username>.md` using this template:
 
-Create a new file called `students/<your-github-username>.md`.
-Copy the template from [`students/README.md`](students/README.md) and fill it
-in. Check [`students/example-student.md`](students/example-student.md) for
-a completed example.
-
-### Step 5 — Stage and commit
-
-```bash
-git status            # see what changed
-git add students/<your-github-username>.md
-git commit -m "Add <your-username>"
+```markdown
+---
+name: Your Name
+github: your-github-username
+bio: One line about you
+favourite: Your favourite language or tool
+---
 ```
 
-### Step 6 — Push your branch
+See [`students/example-student.md`](students/example-student.md) for a
+completed example.
+
+### 5. Commit and push
 
 ```bash
+git add students/<your-github-username>.md
+git commit -m "Add <your-username>"
 git push -u origin add-<your-username>
 ```
 
-### Step 7 — Open a Pull Request
+### 6. Open a Pull Request
 
-Go to **your fork** on GitHub. You should see a banner saying
-*"Compare & pull request"*. Click it, fill in the PR template, and submit!
-
-Or use the CLI:
-
-```bash
-gh pr create --title "Add <your-username>" --body "My first PR! 🎉"
-```
+Go to your fork on GitHub → click **"Compare & pull request"** → submit!
 
 ### 🎉 Done!
 
-Wait for the instructor to review and merge your PR.
-Once merged your card will appear on the **Class Wall**! 🧱
+Once merged, your card appears on the **Class Wall** automatically.
 
 ---
 
-## 🧱 Class Wall
+## 📖 Quick Glossary
 
-After your PR is merged, Vercel automatically rebuilds the
-[**Class Wall**](https://git-github-workshop.vercel.app/) —
-a web page that shows every student's card.
-
-> **Live at:** [git-github-workshop.vercel.app](https://git-github-workshop.vercel.app/)
-> *(The URL may differ — check with your instructor.)*
-
----
-
-## ⚔️ Round 2 — Merge Conflicts
-
-In Round 2, every student edits the **same line** in
-[`conflict-demo/motto.txt`](conflict-demo/motto.txt). This creates merge
-conflicts on purpose so you can practise resolving them.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the step-by-step guide.
+| Term | Meaning |
+|------|---------|
+| **Fork** | Your own copy of this repo |
+| **Clone** | Download the repo to your computer |
+| **Branch** | A separate line of work |
+| **Commit** | Save a snapshot of your changes |
+| **Push** | Upload your commits to GitHub |
+| **PR** | Ask to merge your changes into this repo |
 
 ---
 
-## 📖 Glossary
+## 🆘 Stuck?
 
-| Term       | What it means |
-|------------|---------------|
-| **Fork**   | Your personal copy of someone else's repo on GitHub. |
-| **Clone**  | Downloading a repo from GitHub to your computer. |
-| **Branch** | A parallel line of work. You create one so your changes don't affect `main` until you're ready. |
-| **Commit** | A snapshot of your changes, with a message describing what you did. |
-| **Push**   | Uploading your commits from your computer to GitHub. |
-| **PR** (Pull Request) | A request to merge your branch into the original repo. Others can review your changes first. |
+- Run `git status` — it tells you what to do next.
+- Ask in the workshop chat. No silly questions!
 
----
+## 📄 License
 
-## 🆘 Stuck? Ask in chat!
-
-- Re-read the step you're on — most errors come from a small typo.
-- Run `git status` — it usually tells you what to do next.
-- Ask your neighbour or post in the workshop chat. **There are no silly
-  questions!**
-- Check the [GitHub Docs](https://docs.github.com/en/get-started) for
-  reference.
-
+[MIT](LICENSE)
